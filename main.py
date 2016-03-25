@@ -8,15 +8,29 @@ import tornado.autoreload
 from tornado.options import define, options
 from skeleton.routes import routes
 
-define("port", default=999, help="run on the given port", type=int)
-define("debug", default=False, help="Run in debug mode to reload on code changes", type=bool)
+from utils.config import ConfigManager
+
+define(
+    "env", default="local",
+    help="Target environment e.g. mthomas, stg, prod", type=str)
+config = None
+
+
+def get_config(args):
+    global config
+    if config is None:
+        # Get config from conf manager based on provided env
+        env = options.env
+        logging.info("Loading new etcd config for env: %s", env)
+        config = ConfigManager.load(env, "skeleton")
+    return config
+
 
 class Application(tornado.web.Application):
     def __init__(self):
         handlers = routes()
-        settings = { "debug": options.debug}
+        tornado.web.Application.__init__(self, handlers, **config)
 
-        tornado.web.Application.__init__(self, handlers, **settings)
 
 def main():
     fmt = "%(asctime)s %(levelname)-8.8s %(message)s"
@@ -25,12 +39,15 @@ def main():
 
     tornado.options.parse_command_line()
 
+    global config
+    config = get_config(options)
+
     app = Application()
-    app.listen(options.port)
+    app.listen(int(config["port"]))
 
-    logging.info("Starting skeleton app on port %d" % options.port)
+    logging.info("Starting skeleton app on port %d", int(config["port"]))
 
-    if options.debug:
+    if config["debug"]:
         tornado.autoreload.start()
     tornado.ioloop.IOLoop.instance().start()
 

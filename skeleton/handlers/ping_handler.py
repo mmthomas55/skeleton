@@ -1,5 +1,6 @@
-from tornado.web import RequestHandler, HTTPError
+from tornado.web import RequestHandler
 import logging
+
 
 class PingHandler(RequestHandler):
     def get(self):
