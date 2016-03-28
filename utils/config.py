@@ -19,16 +19,16 @@ class ConfigManager(object):
         self.domain = '/'.join([app, env])
 
     def __call__(self):
-        prefix = "/%s" % self.domain
-        logging.info("Prefix: %s", prefix)
+        prefix = '/%s' % self.domain
+        logging.info('Prefix: %s', prefix)
 
         try:
             config = self.config_client.read(prefix, recursive=True)
         except etcd.EtcdKeyNotFound:
-            raise ConfigManagerException("Domain Not Found: %s" % self.domain)
+            raise ConfigManagerException('Domain Not Found: %s' % self.domain)
 
         config_dict = {
-            result.key.split("%s/" % prefix)[1]: result.value
+            result.key.split('%s/' % prefix)[1]: result.value
             for result in config.children
         }
         logging.info(config_dict)
