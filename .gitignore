@@ -4,3 +4,7 @@ tmp
 log
 *.log
 .DS_Store
+build
+dist
+*.egg
+*.egg-info
