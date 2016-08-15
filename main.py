@@ -21,7 +21,7 @@ def get_config(args):
     if config is None:
         # Get config from conf manager based on provided env
         env = options.env
-        logging.info('Loading new etcd config for env: %s', env)
+        logging.info('Loading new config for env: %s', env)
         config = ConfigManager.load(env, 'skeleton')
     return config
 
